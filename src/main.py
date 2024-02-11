@@ -1,6 +1,10 @@
 import tkinter
 import customtkinter
-from pytube import YouTube
+#from pytube import YouTube
+
+# import defined functions
+from analyze_and_download_function import startDownload
+
 
 # Application window settings
 customtkinter.set_appearance_mode("dark")
@@ -22,7 +26,9 @@ url_entry_field = customtkinter.CTkEntry(app, width=350, height=40, textvariable
 url_entry_field.pack(padx=10, pady=10)
 
 # Adding download button
-download_button = customtkinter.CTkButton(app, text="Analyze")
+def downloadVideo():
+    startDownload(url_entry_field.get())
+download_button = customtkinter.CTkButton(app, text="Analyze", command=downloadVideo)
 download_button.pack(padx=10, pady=10)
 
 # Run application
