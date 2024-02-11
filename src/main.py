@@ -45,6 +45,7 @@ def update_footer():
 footer = customtkinter.CTkFrame(app, fg_color=None, height=10)
 footer.pack(side='bottom', fill='x')
 
+
 footer_label = customtkinter.CTkLabel(footer, text="Checking internet  connection...", text_color='#000000', justify=tkinter.CENTER)
 footer_label.pack()
 
