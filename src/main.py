@@ -1,12 +1,18 @@
+import asyncio
 import os
 import threading
 import time
 import tkinter
 import customtkinter
 from pytube import YouTube
+from ttkbootstrap.toast import ToastNotification
 
 # import custome functions
 from check_internet_connection_function import check_internet_connection
+from displayToastNotification import displayToastNotifications
+
+# defining global variables
+download_completed = False
 
 #Function implementation
 def startDownload(url, downloadPath):
@@ -15,9 +21,12 @@ def startDownload(url, downloadPath):
         video = youtube_Obj.streams.get_highest_resolution()   # Get the highest resolution video stream  
         video.download(downloadPath)
         print("Download Completed!")
+        return True
+        
     except Exception as e:
         print("An error occured during the download: ", e)
-
+        return False
+        
 def onProgress(stream, chunk, bytes_remaining):
     totalFile_size = stream.filesize
     print('TTZ: ',totalFile_size)
@@ -45,42 +54,72 @@ app = customtkinter.CTk()
 app.geometry("720x480")
 app.title("U-TubeGrabby")
 
+app.config(bg="#1F2544")
+
 # UI elements
 # Adding URL lable
 url_label = customtkinter.CTkLabel(app, text="Copy and paste the YouTube URL")
 url_label.pack(padx=10, pady=10)
+url_label.configure(bg_color="#1F2544")
 
 #  Adding URL entry field
 link_var = tkinter.StringVar()
-url_entry_field = customtkinter.CTkEntry(app, width=350, height=40, textvariable=link_var)
+url_entry_field = customtkinter.CTkEntry(app, width=350, height=40, textvariable=link_var, bg_color= "#1F2544", fg_color="#ffffff")
 url_entry_field.pack(padx=10, pady=10)
 
 # Setting the progress bar
 progress_bar = customtkinter.CTkProgressBar(app, width=450)
 progress_bar.set(0)
 progress_bar.pack(padx=10, pady=30)
+progress_bar.configure(bg_color="#1F2544", fg_color="#ffffff")
 
 # Setting up progress label
 progress_text = customtkinter.CTkLabel(app, text="Downloaded: 0")
 progress_text.pack()
+progress_text.configure(bg_color="#1F2544")
 
 
 # Adding download button
 def downloadVideo():
-    
+    global download_completed
+
     url = url_entry_field.get()
     download_path = os.path.join(os.path.dirname(__file__), "vidoes")
     os.makedirs(download_path, exist_ok=True)
 
     if (check_internet_connection()):
-        download_thread = threading.Thread(target=startDownload, args=(url, download_path))
-        download_thread.start()
-        print("Downloading...")    
-    else:
-        print("download failed")
+        download_completed = startDownload(url, download_path)
+        print("Downloading...")
+        print("DC", download_completed)
 
-download_button = customtkinter.CTkButton(app, text="Download", command=downloadVideo)
+        if (download_completed):
+            notification()
+        else:
+            notification()
+    else:
+        print("Check internet connection!")
+        download_completed = False
+        notification()
+
+download_button = customtkinter.CTkButton(app, text="Download",corner_radius=5 , command=downloadVideo)
 download_button.pack(padx=10, pady=10)
+download_button.configure(bg_color="#1F2544")
+
+# dispaly the toast notification
+def notification():
+    global download_completed
+    func_result = download_completed
+    print("funcResult", func_result)
+    if func_result:
+        nTitle = "Success!"
+        nMessage = "Video downloaded successfully! Check your Download folder."
+        nStatus = 'success'
+        displayToastNotifications(nTitle, nMessage, nStatus)
+    else:
+        nTitle = "Failed!"
+        nMessage = "Video download  failed. Please check your internet connection or URL."
+        nStatus = 'danger'
+        displayToastNotifications(nTitle, nMessage, nStatus)
 
 
 # Adding footer with checking internet connection functionality
