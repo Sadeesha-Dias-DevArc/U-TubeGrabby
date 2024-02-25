@@ -1,8 +1,4 @@
-tkinter
 customtkinter
 ttkbootstrap
 pytube
 requests
-python-dotenv
-azure-storage-blob
-azure-identity
