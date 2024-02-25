@@ -1,7 +1,4 @@
-import asyncio
 import os
-import threading
-import time
 import tkinter
 import customtkinter
 from pytube import YouTube
